@@ -1,0 +1,65 @@
+
+# Clean Zsh configuration for blockchain development
+# History settings
+HISTFILE=~/.zsh_history
+HISTSIZE=50000
+SAVEHIST=50000
+setopt HIST_VERIFY
+setopt SHARE_HISTORY
+setopt APPEND_HISTORY
+setopt INC_APPEND_HISTORY
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_SPACE
+
+# Basic options
+setopt AUTO_CD
+setopt CORRECT
+setopt COMPLETE_IN_WORD
+setopt NO_BEEP
+
+# Simple prompt with git info
+autoload -Uz vcs_info
+precmd_functions+=( vcs_info )
+setopt prompt_subst
+zstyle ':vcs_info:git:*' formats ' (%b)'
+zstyle ':vcs_info:*' enable git
+PROMPT='%F{green}%n@%m%f:%F{blue}%~%f%F{red}${vcs_info_msg_0_}%f$ '
+
+# Useful aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias grep='grep --color=auto'
+
+# Load environment variables
+export PATH="$PATH:/home/ritual/.foundry/bin"
+export PATH="$PATH:/home/ritual/.local/bin"
+
+# Cargo environment
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+
+# NVM
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# Function to start development environment (just panes, no commands)
+start_dev_env() {
+    tmux new-session -d -s dev
+    tmux split-window -t dev -v
+    tmux split-window -t dev -h
+    tmux select-pane -t dev:0.0
+    tmux attach-session -t dev
+}
+
+# Load zsh-autosuggestions plugin
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# Autosuggestion settings
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=8"
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+
+. "$HOME/.local/bin/env"
